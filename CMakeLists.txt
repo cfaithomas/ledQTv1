@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.17)
+project(ledQT)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_CXX_STANDARD 14)
+find_package(Qt5 COMPONENTS REQUIRED Core Gui Widgets SerialPort)
+add_executable(ledQT main.cpp Fenetre.cpp Fenetre.h Presenter.cpp Presenter.h)
+target_link_libraries(ledQT Qt5::Core Qt5::Gui Qt5::Widgets Qt5::SerialPort)
