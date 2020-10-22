@@ -4,6 +4,7 @@
 
 #include <cstring>
 #include "Presenter.h"
+#include "Settings.h"
 
 Presenter::Presenter():QObject() {
 fenetre=new Fenetre();
@@ -15,7 +16,7 @@ init();
 }
 
 void Presenter::init() {
-    serial->setPortName("/dev/ttyACM0"); //definition du port sur lequel est branché l'arduino
+    serial->setPortName(Settings::usbname); //definition du port sur lequel est branché l'arduino
     serial->setBaudRate(QSerialPort::Baud9600); //définition de la vitesse de transmission
     serial->setDataBits(QSerialPort::Data8); //codage sur 8bits
     serial->setParity(QSerialPort::NoParity); //pas de parité
@@ -35,8 +36,9 @@ void Presenter::sendData() {
 if(fenetre->getButton()->text()=="Off")
 {
 
-    if(serial->isOpen()&&serial->isWritable())
-        serial->write("ON\n");
+    if(serial->isOpen()&&serial->isWritable()) {
+        serial->write(R"({"button":1})");
+    }
     else
         qDebug("Erreur Ecriture");
     fenetre->getButton()->setText("On");
@@ -44,7 +46,7 @@ if(fenetre->getButton()->text()=="Off")
 else
 {
     if(serial->isOpen()&&serial->isWritable())
-        serial->write("OFF\n");
+        serial->write(R"({"button":0})");
     else
         qDebug("Erreur Ecriture");
     fenetre->getButton()->setText("Off");
@@ -57,16 +59,15 @@ serial->close();
 }
 
 void Presenter::sendAnalogData() {
-    char *value[255];
-fenetre->getNumber()->display(fenetre->getSlider()->value());
-sprintf(*value,"%d",fenetre->getSlider()->value());
+fenetre->getNumber()->display(fenetre->getSlider()->value()); //met à jour le QLCD Number
+std::string start=R"({"slider":)";
+std::string value=std::to_string(fenetre->getSlider()->value());
+std::string end="}";
+std::string json=start+value+end;
 
 
-    std::strcat(*value,"A");
-    if(serial->isOpen()&&serial->isWritable())
-        serial->write((const char *)value);
-    else
-        qDebug("Erreur Ecriture");
+    serial->write(json.c_str());
+
 }
 
 

@@ -4,6 +4,7 @@
 
 #include <QtWidgets/QGridLayout>
 #include "Fenetre.h"
+#include "Settings.h"
 
 Fenetre::Fenetre() : QFrame() {
     QGridLayout *layout=new QGridLayout();
@@ -11,6 +12,8 @@ Fenetre::Fenetre() : QFrame() {
     number=new QLCDNumber();
     slider=new QSlider();
     slider->setOrientation(Qt::Horizontal);
+    slider->setMinimum(Settings::min);
+    slider->setMaximum(Settings::max);
     layout->addWidget(number,4,1);
     layout->addWidget(slider,4,2);
     layout->addWidget(button,5,2);
